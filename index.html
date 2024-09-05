@@ -8,6 +8,7 @@
         body {
             text-align: center;
             font-family: Arial, sans-serif;
+            background-color: #F7E7A6; /* Banana Yellow Background */
         }
         h1 {
             font-size: 65px;
@@ -74,11 +75,17 @@
         <p>Update Amount ($):</p>
         <input type="number" id="amount">
         <button onclick="updateBar()">Update</button>
+        <button onclick="resetAmount()">Reset</button>
     </div>
 
     <script>
         const goal = 7500000; // 7.5 million
-        let currentAmount = 0;
+        let currentAmount = parseFloat(localStorage.getItem('donationAmount')) || 0;
+
+        // Update the status bar on page load
+        window.onload = function() {
+            updateDisplay();
+        };
 
         document.getElementById('redSquare').onclick = function() {
             document.getElementById('passwordPrompt').classList.remove('hidden');
@@ -98,11 +105,24 @@
             const amount = parseFloat(document.getElementById('amount').value);
             if (!isNaN(amount)) {
                 currentAmount += amount;
-                const percentage = (currentAmount / goal) * 100;
-                document.getElementById('statusFill').style.width = Math.min(percentage, 100) + '%';
-                document.getElementById('statusFill').innerHTML = Math.min(percentage, 100).toFixed(2) + '%';
-                document.getElementById('percentComplete').innerHTML = Math.min(percentage, 100).toFixed(2) + '% to completion';
+                localStorage.setItem('donationAmount', currentAmount);
+                updateDisplay();
             }
+        }
+
+        function resetAmount() {
+            if (confirm("Are you sure you want to reset the donation amount?")) {
+                currentAmount = 0;
+                localStorage.setItem('donationAmount', currentAmount);
+                updateDisplay();
+            }
+        }
+
+        function updateDisplay() {
+            const percentage = (currentAmount / goal) * 100;
+            document.getElementById('statusFill').style.width = Math.min(percentage, 100) + '%';
+            document.getElementById('statusFill').innerHTML = `$${currentAmount.toFixed(2)} raised (${Math.min(percentage, 100).toFixed(2)}%)`;
+            document.getElementById('percentComplete').innerHTML = `${Math.min(percentage, 100).toFixed(2)}% to completion`;
         }
     </script>
 
