@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spitfire #5476</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            font-size: 65px;
+        }
+        p {
+            font-size: 12px;
+        }
+        .status-bar {
+            width: 80%;
+            background-color: lightgrey;
+            height: 30px;
+            border-radius: 15px;
+            margin: 20px auto;
+            position: relative;
+        }
+        .status-fill {
+            height: 100%;
+            width: 0%;
+            background-color: green;
+            border-radius: 15px;
+            text-align: right;
+            padding-right: 10px;
+            box-sizing: border-box;
+            color: white;
+        }
+        .percent-complete {
+            margin-top: 10px;
+        }
+        .red-square {
+            width: 30px;
+            height: 30px;
+            background-color: red;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Spitfire #5476</h1>
+    <p>Help me get back the Spitfire I bought on auction for only 570K back in 2021.<br>
+        Donate anything, every little bit helps. DM ace6405 or friend hoblox1234poo on Roblox.</p>
+
+    <div class="status-bar">
+        <div class="status-fill" id="statusFill">0%</div>
+    </div>
+
+    <p class="percent-complete" id="percentComplete">0% to completion</p>
+
+    <div class="red-square" id="redSquare"></div>
+
+    <div id="passwordPrompt" class="hidden">
+        <p>Enter Password:</p>
+        <input type="password" id="passwordInput">
+        <button onclick="checkPassword()">Submit</button>
+    </div>
+
+    <div id="amountInput" class="hidden">
+        <p>Update Amount ($):</p>
+        <input type="number" id="amount">
+        <button onclick="updateBar()">Update</button>
+    </div>
+
+    <script>
+        const goal = 7500000; // 7.5 million
+        let currentAmount = 0;
+
+        document.getElementById('redSquare').onclick = function() {
+            document.getElementById('passwordPrompt').classList.remove('hidden');
+        };
+
+        function checkPassword() {
+            const password = document.getElementById('passwordInput').value;
+            if (password === '3683') {
+                document.getElementById('amountInput').classList.remove('hidden');
+                document.getElementById('passwordPrompt').classList.add('hidden');
+            } else {
+                alert('Incorrect Password');
+            }
+        }
+
+        function updateBar() {
+            const amount = parseFloat(document.getElementById('amount').value);
+            if (!isNaN(amount)) {
+                currentAmount += amount;
+                const percentage = (currentAmount / goal) * 100;
+                document.getElementById('statusFill').style.width = Math.min(percentage, 100) + '%';
+                document.getElementById('statusFill').innerHTML = Math.min(percentage, 100).toFixed(2) + '%';
+                document.getElementById('percentComplete').innerHTML = Math.min(percentage, 100).toFixed(2) + '% to completion';
+            }
+        }
+    </script>
+
+</body>
+</html>
