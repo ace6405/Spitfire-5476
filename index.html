@@ -13,8 +13,8 @@
         h1 {
             font-size: 65px;
         }
-        p {
-            font-size: 12px;
+        p.description {
+            font-size: 24px;
         }
         .status-bar {
             width: 80%;
@@ -36,6 +36,7 @@
         }
         .percent-complete {
             margin-top: 10px;
+            font-size: 24px; /* Increased font size */
         }
         .red-square {
             width: 30px;
@@ -45,25 +46,42 @@
             top: 10px;
             right: 10px;
             cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
         }
         .hidden {
             display: none;
+        }
+        .leaderboard {
+            margin: 20px auto;
+            width: 80%;
+            text-align: left;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 10px;
+            background-color: #fff;
+        }
+        .leaderboard th, .leaderboard td {
+            padding: 5px;
         }
     </style>
 </head>
 <body>
 
     <h1>Spitfire #5476</h1>
-    <p>Help me get back the Spitfire I bought on auction for only 570K back in 2021.<br>
+    <p class="description">Help me get back the Spitfire I bought on auction for only 570K back in 2021.<br>
         Donate anything, every little bit helps. DM ace6405 or friend hoblox1234poo on Roblox.</p>
 
     <div class="status-bar">
-        <div class="status-fill" id="statusFill">0%</div>
+        <div class="status-fill" id="statusFill">0</div>
     </div>
 
     <p class="percent-complete" id="percentComplete">0% to completion</p>
 
-    <div class="red-square" id="redSquare"></div>
+    <div class="red-square" id="redSquare">MC</div>
 
     <div id="passwordPrompt" class="hidden">
         <p>Enter Password:</p>
@@ -78,17 +96,35 @@
         <button onclick="resetAmount()">Reset</button>
     </div>
 
+    <div id="leaderboard" class="hidden leaderboard">
+        <h2>TOP DONATORS</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Amount Donated</th>
+                </tr>
+            </thead>
+            <tbody id="leaderboardBody">
+                <!-- Leaderboard rows will be added here dynamically -->
+            </tbody>
+        </table>
+    </div>
+
     <script>
         const goal = 7500000; // 7.5 million
         let currentAmount = parseFloat(localStorage.getItem('donationAmount')) || 0;
+        let topDonators = JSON.parse(localStorage.getItem('topDonators')) || [];
 
-        // Update the status bar on page load
+        // Update the status bar and leaderboard on page load
         window.onload = function() {
             updateDisplay();
+            updateLeaderboard();
         };
 
         document.getElementById('redSquare').onclick = function() {
             document.getElementById('passwordPrompt').classList.remove('hidden');
+            document.getElementById('leaderboard').classList.remove('hidden');
         };
 
         function checkPassword() {
@@ -103,9 +139,11 @@
 
         function updateBar() {
             const amount = parseFloat(document.getElementById('amount').value);
-            if (!isNaN(amount)) {
+            const name = prompt("Enter your name:");
+            if (!isNaN(amount) && name) {
                 currentAmount += amount;
                 localStorage.setItem('donationAmount', currentAmount);
+                updateTopDonators(name, amount);
                 updateDisplay();
             }
         }
@@ -121,10 +159,29 @@
         function updateDisplay() {
             const percentage = (currentAmount / goal) * 100;
             document.getElementById('statusFill').style.width = Math.min(percentage, 100) + '%';
-            document.getElementById('statusFill').innerHTML = `$${currentAmount.toFixed(2)} raised (${Math.min(percentage, 100).toFixed(2)}%)`;
+            document.getElementById('statusFill').innerHTML = `$${currentAmount.toFixed(2)}`;
             document.getElementById('percentComplete').innerHTML = `${Math.min(percentage, 100).toFixed(2)}% to completion`;
+        }
+
+        function updateTopDonators(name, amount) {
+            topDonators.push({ name, amount });
+            topDonators.sort((a, b) => b.amount - a.amount);
+            topDonators = topDonators.slice(0, 10); // Keep only top 10 donators
+            localStorage.setItem('topDonators', JSON.stringify(topDonators));
+            updateLeaderboard();
+        }
+
+        function updateLeaderboard() {
+            const tbody = document.getElementById('leaderboardBody');
+            tbody.innerHTML = '';
+            topDonators.forEach(donor => {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td>${donor.name}</td><td>$${donor.amount.toFixed(2)}</td>`;
+                tbody.appendChild(row);
+            });
         }
     </script>
 
 </body>
 </html>
+
